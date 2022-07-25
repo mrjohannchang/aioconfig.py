@@ -60,9 +60,12 @@ class Section(BaseStorage):
 
         return self
 
+    def _get(self, key: str, default=NonExistentError):
+        return self.cache.get(key, default)
+
     async def get(self, key: str, default=NonExistentError):
         key = dataset.util.normalize_table_name(key)
-        value = self.cache.get(key, NonExistentError)
+        value = await self.loop.run_in_executor(self.db_client.executor, self._get, key, default)
 
         if value is NonExistentError:
             if default is NonExistentError:
@@ -70,6 +73,7 @@ class Section(BaseStorage):
             value = default
         else:
             value = json.loads(value)
+
         return value
 
     def _get_tables(self):

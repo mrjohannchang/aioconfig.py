@@ -16,7 +16,6 @@ async def example():
     default_section.set('grault', 'garply')
     default_section.set('waldo', 'fred')
     default_section.set('plugh', 'xyzzy')
-    await asyncio.sleep(0.1)
     print('qux: {}'.format(await default_section.get('qux')))
     print('quuz: {}'.format(await default_section.get('quuz')))
     print('grault: {}'.format(await default_section.get('grault')))
