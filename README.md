@@ -1,7 +1,13 @@
 # aioconfig
 
-`aioconfig` stores configurations in the background (asynchronously) efficiently
-and thread-safely.
+`aioconfig` **efficiently** and **thread-safely** stores configurations in the
+background (**asynchronously**).
+
+## Installation
+
+```sh
+pip install aioconfig
+```
 
 ## Usage
 
@@ -14,7 +20,7 @@ while the latter one blocks until the data written onto the disk.
 
 ```py
 import aioconfig
-storage = aioconfig.get_storage(await aioconfig.connect('sqlite:///example.db'))
+storage = aioconfig.get_storage(await aioconfig.connect('example.db'))
 section = await aioconfig.get('default')
 ```
 
