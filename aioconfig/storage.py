@@ -25,6 +25,10 @@ class BaseStorage(metaclass=abc.ABCMeta):
         self.loop = self.db_client.loop
 
     @abc.abstractmethod
+    def delete(self, key: str):
+        pass
+
+    @abc.abstractmethod
     async def get(self, key: str):
         pass
 
@@ -34,10 +38,30 @@ class Storage(BaseStorage):
         super().__init__(db_client)
         self.cache = dict()
 
+    def _delete(self, key):
+        self.cache.pop(key, None)
+        tables = self._get_tables()
+        if key in tables:
+            self.db_client.connection.load_table(key).drop()
+
+    def delete(self, key):
+        key = dataset.util.normalize_table_name(key)
+        return self.loop.run_in_executor(self.db_client.executor, self._delete, key)
+
+    def _get_tables(self):
+        return self.db_client.connection.tables
+
     async def get(self, key: str):
         key = dataset.util.normalize_table_name(key)
+
+        tables = await self.loop.run_in_executor(self.db_client.executor, self._get_tables)
+        if key not in tables:
+            await self.loop.run_in_executor(
+                self.db_client.executor, self.db_client.connection.create_table, key)
+
         if key not in self.cache:
-            self.cache[key] = await Section(key, db_client=self.db_client).init()
+            self.cache[key] = await Section(key, db_client=self.db_client).load()
+
         return self.cache.get(key)
 
 
@@ -46,16 +70,19 @@ class Section(BaseStorage):
         super().__init__(db_client)
         self.name = dataset.util.normalize_table_name(name)
         self.cache = dict()
+        self.table = None
 
-    async def init(self):
-        tables = await self.loop.run_in_executor(self.db_client.executor, self._get_tables)
-        if self.name not in tables:
-            await self.loop.run_in_executor(
-                self.db_client.executor, self.db_client.connection.create_table, self.name)
+    def _delete(self, key):
+        self.cache.pop(key, None)
+        self.table.delete(key=key)
 
-        rows = await self.loop.run_in_executor(
+    def delete(self, key):
+        return self.loop.run_in_executor(self.db_client.executor, self._delete, key)
+
+    async def load(self):
+        self.table = await self.loop.run_in_executor(
             self.db_client.executor, self.db_client.connection.load_table, self.name)
-        for row in rows:
+        for row in self.table:
             self.cache[row[KEY]] = row[VALUE]
 
         return self
@@ -76,8 +103,11 @@ class Section(BaseStorage):
 
         return value
 
-    def _get_tables(self):
-        return self.db_client.connection.tables
+    def _get_all(self):
+        return {key: json.loads(value) for key, value in self.cache.items()}
+
+    async def get_all(self):
+        return await self.loop.run_in_executor(self.db_client.executor, self._get_all)
 
     def _set(self, key: str, jsonized_value: str):
         now = datetime.datetime.utcnow()
@@ -90,8 +120,7 @@ class Section(BaseStorage):
         data[UPDATED_AT] = now
 
         self.cache[key] = jsonized_value
-
-        self.db_client.connection.load_table(self.name).upsert(data, [KEY])
+        self.table.upsert(data, [KEY])
 
     # This is an awaitable function
     def set(self, key: str, value: Any):
