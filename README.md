@@ -1,36 +1,45 @@
 # aioconfig
 
-## Demo
+`aioconfig` stores configurations in the background (asynchronously) efficiently
+and thread-safely.
+
+## Usage
+
+The interface of `aioconfig` is dramatically easy to use.
+For example, both `set(key, value)` and `await set(key, value)` store a pair of
+key/value, which the former one is a fire-and-forget asynchronous function call
+while the latter one blocks until the data written onto the disk.
 
 ### Init
 
 ```py
 import aioconfig
-storage = aioconfig.get_storage(connection=aioconfig.connect('sqlite'))
+storage = aioconfig.get_storage(await aioconfig.connect('sqlite:///example.db'))
+section = await aioconfig.get('default')
 ```
 
 ### Get value
 
 ```py
-value1 = storage.get(key='foo', section='default')
-value2 = storage.get(key='baz', section='default')
+value1 = await section.get(key='foo')
+value2 = await section.get(key='baz')
 ```
 
-### Set value
+### Set value (fire-and-forget)
 
 ```py
-storage.set(key='foo', value='bar', section='default')
-storage.set(key='baz', value='qux', section='default')
+section.set(key='foo', value='bar')
+section.set(key='baz', value=12.3)
 ```
 
-#### Blocking write through
+#### Blocking set value (wait until it's done)
 
 ```py
-await storage.set(key='foo', value='bar', section='default')
-await storage.set(key='baz', value='qux', section='default')
+await section.set(key='foo', value='bar')
+await section.set(key='baz', value=12.3)
 ```
 
-### Batch set value (TBD)
+### Batch set value (fire-and-forget) (TBD)
 
 ```py
 with storage.transation():
@@ -38,11 +47,11 @@ with storage.transation():
         key='foo', value='bar',
         section='default_section')
     storage.set(
-        key='baz', value='qux',
+        key='baz', value=12.3,
         section='default_section')
 ```
 
-#### Blocking write through (TBD)
+#### Blocking set value (wait until it's done) (TBD)
 
 ```py
 async with storage.transation():
@@ -50,6 +59,6 @@ async with storage.transation():
         key='foo', value='bar',
         section='default_section')
     storage.set(
-        key='baz', value='qux',
+        key='baz', value=12.3,
         section='default_section')
 ```
