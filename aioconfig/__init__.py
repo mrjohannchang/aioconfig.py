@@ -17,6 +17,6 @@ __all__ = [
     'NonExistentError',
     'Section',
     'Storage',
-    'connect',
+    'attach',
     'get_storage',
 ]
