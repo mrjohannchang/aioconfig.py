@@ -1,8 +1,7 @@
 import os
 
-import pytest
-
 import aioconfig
+import pytest
 
 
 @pytest.fixture()
