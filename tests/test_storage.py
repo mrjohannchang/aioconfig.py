@@ -10,6 +10,10 @@ async def db_client():
     db_path = 'test.db'
     client = await aioconfig.attach(db_path)
     yield client
+    if os.path.isfile('{}-shm'.format(db_path)):
+        os.remove('{}-shm'.format(db_path))
+    if os.path.isfile('{}-wal'.format(db_path)):
+        os.remove('{}-wal'.format(db_path))
     os.remove(db_path)
 
 

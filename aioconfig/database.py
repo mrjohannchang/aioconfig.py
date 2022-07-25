@@ -18,7 +18,6 @@ class DatabaseClient:
 
     def _connect(self):
         connection = dataset.connect('sqlite:///{}?check_same_thread=False'.format(self.db_path))
-        connection.executable.execute('PRAGMA wal_checkpoint')
         connection.executable.execute('PRAGMA journal_mode=WAL')
         return connection
 

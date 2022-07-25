@@ -5,9 +5,13 @@ import pytest
 
 
 @pytest.fixture()
-def db_path():
+async def db_path():
     path = 'test.db'
     yield path
+    if os.path.isfile('{}-shm'.format(path)):
+        os.remove('{}-shm'.format(path))
+    if os.path.isfile('{}-wal'.format(path)):
+        os.remove('{}-wal'.format(path))
     os.remove(path)
 
 
