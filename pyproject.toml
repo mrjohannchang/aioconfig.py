@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aioconfig"
-version = "0.4.1"
+version = "0.4.2"
 description = ""
 authors = ["Henry Chang <mr.changyuheng@gmail.com>"]
 license = "MPL-2.0"
