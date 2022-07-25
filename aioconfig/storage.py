@@ -87,12 +87,12 @@ class Section(BaseStorage):
 
         return self
 
-    def _get(self, key: str, default=NonExistentError):
-        return self.cache.get(key, default)
+    def _get(self, key: str):
+        return self.cache.get(key, NonExistentError)
 
     async def get(self, key: str, default=NonExistentError):
         key = dataset.util.normalize_table_name(key)
-        value = await self.loop.run_in_executor(self.db_client.executor, self._get, key, default)
+        value = await self.loop.run_in_executor(self.db_client.executor, self._get, key)
 
         if value is NonExistentError:
             if default is NonExistentError:

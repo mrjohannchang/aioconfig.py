@@ -50,6 +50,7 @@ async def test_section_get(db_client):
     await section.set('foo', 'bar')
     assert await section.get('foo') == json.loads(section.db_client.connection.executable.execute(
         "SELECT key, value FROM test WHERE key='foo'").fetchone()[1])
+    assert await section.get('non_existed_key', 'default_value') == 'default_value'
 
 
 @pytest.mark.asyncio
