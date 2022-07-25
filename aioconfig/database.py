@@ -27,5 +27,5 @@ class DatabaseClient:
         return self
 
 
-async def connect(db_path: str):
-    return await DatabaseClient(db_path).connect()
+async def connect(db_path: str, loop: Optional[asyncio.AbstractEventLoop] = None):
+    return await DatabaseClient(db_path, loop=loop).connect()

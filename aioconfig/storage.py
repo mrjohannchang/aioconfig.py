@@ -21,6 +21,7 @@ class NonExistentError(ValueError):
 class BaseStorage(metaclass=abc.ABCMeta):
     def __init__(self, db_client: database.DatabaseClient):
         self.db_client = db_client
+        self.loop = self.db_client.loop
 
     @abc.abstractmethod
     async def get(self, key: str):
@@ -46,12 +47,12 @@ class Section(BaseStorage):
         self.cache = dict()
 
     async def init(self):
-        tables = await self.db_client.loop.run_in_executor(self.db_client.executor, self._get_tables)
+        tables = await self.loop.run_in_executor(self.db_client.executor, self._get_tables)
         if self.name not in tables:
-            await self.db_client.loop.run_in_executor(
+            await self.loop.run_in_executor(
                 self.db_client.executor, self.db_client.connection.create_table, self.name)
 
-        rows = await self.db_client.loop.run_in_executor(
+        rows = await self.loop.run_in_executor(
             self.db_client.executor, self.db_client.connection.load_table, self.name)
         for row in rows:
             self.cache[row[KEY]] = row[VALUE]
@@ -83,7 +84,7 @@ class Section(BaseStorage):
 
     # This is an awaitable function
     def set(self, key: str, value: Any):
-        return self.db_client.loop.run_in_executor(self.db_client.executor, self._set, key, json.dumps(value))
+        return self.loop.run_in_executor(self.db_client.executor, self._set, key, json.dumps(value))
 
 
 def get_storage(db_client: database.DatabaseClient):
