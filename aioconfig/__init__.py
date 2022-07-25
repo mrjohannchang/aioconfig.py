@@ -1,6 +1,6 @@
 from .database import \
     DatabaseClient, \
-    connect
+    attach
 from .storage import \
     KEY, VALUE, CREATED_AT, UPDATED_AT, \
     NonExistentError, BaseStorage, Storage, Section, \

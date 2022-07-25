@@ -20,7 +20,7 @@ while the latter one blocks until the data written onto the disk.
 
 ```py
 import aioconfig
-storage = aioconfig.get_storage(await aioconfig.connect('example.db'))
+storage = aioconfig.get_storage(await aioconfig.attach('example.db'))
 section = await aioconfig.get('default')
 ```
 
