@@ -1,4 +1,5 @@
 import abc
+import collections
 import datetime
 import json
 from typing import Any
@@ -76,10 +77,16 @@ class Section(BaseStorage):
 
     def _set(self, key: str, jsonized_value: str):
         now = datetime.datetime.utcnow()
-        data = {KEY: key, VALUE: jsonized_value, UPDATED_AT: now}
+
+        data = collections.OrderedDict()
+        data[KEY] = key
+        data[VALUE] = jsonized_value
         if key not in self.cache:
             data[CREATED_AT] = now
+        data[UPDATED_AT] = now
+
         self.cache[key] = jsonized_value
+
         self.db_client.connection.load_table(self.name).upsert(data, [KEY])
 
     # This is an awaitable function
