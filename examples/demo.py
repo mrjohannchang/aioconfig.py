@@ -1,4 +1,5 @@
 import asyncio
+import functools
 
 import aioconfig
 
@@ -6,11 +7,18 @@ import aioconfig
 async def example():
     default_section = await aioconfig.get_storage(await aioconfig.attach('example.db')).get('default')
 
+    # Regular use case
     await default_section.set('foo', 'bar')
     print('foo: {}'.format(await default_section.get('foo')))
     await default_section.set('baz', 12.3)
     print('baz: {}'.format(await default_section.get('baz')))
 
+    # Add done_callback
+    f = default_section.set('xyzzy', 'abc')
+    f.add_done_callback(functools.partial(print, '[callback] finished storing (xyzzy, abc)'))
+    print('finished storing (xyzzy, abc)')
+
+    # Multiple fire-and-forget setting
     default_section.set('qux', 'quux')
     default_section.set('quuz', 'corge')
     default_section.set('grault', 'garply')
