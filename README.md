@@ -24,11 +24,23 @@ storage = aioconfig.get_storage(await aioconfig.attach('example.db'))
 section = await aioconfig.get('default')
 ```
 
+### Delete value
+
+```py
+section.delete(key='foo')
+```
+
+#### Blocking delete value (wait until it's done)
+
+```py
+await section.delete(key='foo')
+```
+
 ### Get value
 
 ```py
-value1 = await section.get(key='foo')
-value2 = await section.get(key='baz')
+value1 = await section.get(key='foo', default='bar')
+value2 = await section.get(key='baz', default=12.3)
 ```
 
 ### Set value (fire-and-forget)
