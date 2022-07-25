@@ -43,6 +43,12 @@ value1 = await section.get(key='foo', default='bar')
 value2 = await section.get(key='baz', default=12.3)
 ```
 
+### Get all
+
+```py
+value = await section.get_all()
+```
+
 ### Set (fire-and-forget)
 
 ```py
