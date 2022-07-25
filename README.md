@@ -57,7 +57,7 @@ with storage.transation():
         section='default_section')
 ```
 
-#### Blocking set value (wait until it's done) (TBD)
+#### Blocking batch set value (wait until it's done) (TBD)
 
 ```py
 async with storage.transation():
