@@ -17,7 +17,10 @@ class DatabaseClient:
         self.connection = None
 
     def _connect(self):
-        return dataset.connect('sqlite:///{}?check_same_thread=False'.format(self.db_path))
+        connection = dataset.connect('sqlite:///{}?check_same_thread=False'.format(self.db_path))
+        connection.executable.execute('PRAGMA wal_checkpoint')
+        connection.executable.execute('PRAGMA journal_mode=WAL')
+        return connection
 
     async def connect(self):
         self.connection = await self.loop.run_in_executor(self.executor, self._connect)
