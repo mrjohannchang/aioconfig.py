@@ -24,40 +24,40 @@ storage = aioconfig.get_storage(await aioconfig.attach('example.db'))
 section = await aioconfig.get('default')
 ```
 
-### Delete value
+### Delete
 
 ```py
 section.delete(key='foo')
 ```
 
-#### Blocking delete value (wait until it's done)
+#### Blocking delete (wait until it's done)
 
 ```py
 await section.delete(key='foo')
 ```
 
-### Get value
+### Get
 
 ```py
 value1 = await section.get(key='foo', default='bar')
 value2 = await section.get(key='baz', default=12.3)
 ```
 
-### Set value (fire-and-forget)
+### Set (fire-and-forget)
 
 ```py
 section.set(key='foo', value='bar')
 section.set(key='baz', value=12.3)
 ```
 
-#### Blocking set value (wait until it's done)
+#### Blocking set (wait until it's done)
 
 ```py
 await section.set(key='foo', value='bar')
 await section.set(key='baz', value=12.3)
 ```
 
-### Batch set value (fire-and-forget) (TBD)
+### Batch set (fire-and-forget) (TBD)
 
 ```py
 with storage.transation():
@@ -69,7 +69,7 @@ with storage.transation():
         section='default_section')
 ```
 
-#### Blocking batch set value (wait until it's done) (TBD)
+#### Blocking batch set (wait until it's done) (TBD)
 
 ```py
 async with storage.transation():
